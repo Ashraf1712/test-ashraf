@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
+            Task List
         </h2>
     </x-slot>
 
@@ -21,27 +21,39 @@
                                         class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Title</th>
                                     <th
-                                        class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider max-w-xs">
                                         Description</th>
                                     <th
                                         class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         Completed</th>
-                                    <th class="px-6 py-3 bg-gray-50"></th>
+                                    <th
+                                        class="px-6 py-3 bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
                                 @foreach ($tasks as $task)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $task->title }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $task->description }}</td>
+                                        <td class="px-6 py-4 max-w-xs whitespace-wrap">{{ $task->description }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if ($task->is_completed)
-                                                <a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                                    href="">Completed</a>
+                                                <a class="bg-green-500 text-white  text-sm px-4 py-2 rounded hover:bg-green-600 w-2"
+                                                    href="{{ route('tasks.complete', $task->id) }}"
+                                                    onclick="event.preventDefault(); document.getElementById('complete-task-{{ $task->id }}').submit();">
+                                                    Completed</a>
                                             @else
-                                                <a class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                                                    href="">Incomplete</a>
+                                                <a class="bg-red-500 text-white text-sm px-4 py-2 rounded hover:bg-red-600"
+                                                    href="{{ route('tasks.complete', $task->id) }}"
+                                                    onclick="event.preventDefault(); document.getElementById('complete-task-{{ $task->id }}').submit();">
+                                                    Incomplete</a>
                                             @endif
+                                            <form id="complete-task-{{ $task->id }}"
+                                                action="{{ route('tasks.complete', $task->id) }}" method="POST"
+                                                style="display: none;">
+                                                @csrf
+                                                @method('PATCH')
+                                            </form>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <a class="bg-green-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -62,7 +74,6 @@
                                                 @csrf
                                                 @method('DELETE')
                                             </form>
-
                                         </td>
                                     </tr>
                                 @endforeach
